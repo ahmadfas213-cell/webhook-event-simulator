@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Event Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="grid"></div>
+
+<main class="container">
+
+    <header class="hero">
+        <div>
+            <p class="eyebrow">WEBHOOK EVENT SIMULATOR</p>
+
+            <h1>
+                Send.<br>
+                Verify.<br>
+                Replay.
+            </h1>
+
+            <p class="subtitle">
+                Simulate webhook events, generate HMAC signatures,
+                inspect responses and replay delivery attempts.
+            </p>
+        </div>
+
+        <div class="status">
+            <span></span>
+            LOCAL ENGINE
+        </div>
+    </header>
+
+
+    <section class="workspace">
+
+        <div class="panel composer">
+
+            <div class="panel-title">
+                <div>
+                    <p class="eyebrow">01 · EVENT COMPOSER</p>
+                    <h2>Create webhook</h2>
+                </div>
+            </div>
+
+
+            <div class="field">
+
+                <label>EVENT TYPE</label>
+
+                <select id="eventType">
+
+                    <option value="user.created">
+                        user.created
+                    </option>
+
+                    <option value="payment.completed">
+                        payment.completed
+                    </option>
+
+                    <option value="payment.failed">
+                        payment.failed
+                    </option>
+
+                    <option value="order.created">
+                        order.created
+                    </option>
+
+                    <option value="subscription.updated">
+                        subscription.updated
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>WEBHOOK ENDPOINT</label>
+
+                <input
+                    id="endpoint"
+                    type="text"
+                    value="http://localhost:3000/webhook"
+                    placeholder="https://example.com/webhook"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>WEBHOOK SECRET</label>
+
+                <input
+                    id="secret"
+                    type="password"
+                    value="demo_secret_123"
+                    placeholder="Webhook secret"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <div class="label-row">
+
+                    <label>JSON PAYLOAD</label>
+
+                    <button
+                        id="generateButton"
+                        type="button"
+                    >
+                        GENERATE
+                    </button>
+
+                </div>
+
+                <textarea
+                    id="payload"
+                    spellcheck="false"
+                ></textarea>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    id="sendButton"
+                    class="primary"
+                    type="button"
+                >
+                    SEND WEBHOOK
+                </button>
+
+                <button
+                    id="clearButton"
+                    class="secondary"
+                    type="button"
+                >
+                    CLEAR
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel response">
+
+            <div class="panel-title">
+
+                <div>
+                    <p class="eyebrow">02 · DELIVERY RESULT</p>
+                    <h2>Response</h2>
+                </div>
+
+                <span id="responseStatus">
+                    READY
+                </span>
+
+            </div>
+
+
+            <div class="response-meta">
+
+                <div>
+                    <span>STATUS</span>
+                    <strong id="statusCode">---</strong>
+                </div>
+
+                <div>
+                    <span>LATENCY</span>
+                    <strong id="latency">---</strong>
+                </div>
+
+                <div>
+                    <span>EVENT ID</span>
+                    <strong id="eventId">---</strong>
+                </div>
+
+            </div>
+
+
+            <div class="code-box">
+
+                <div class="code-header">
+                    <span>RESPONSE BODY</span>
+
+                    <button id="copyResponse">
+                        COPY
+                    </button>
+                </div>
+
+                <pre id="responseBody">
+Waiting for webhook delivery...
+                </pre>
+
+            </div>
+
+
+            <div class="signature-box">
+
+                <p class="eyebrow">
+                    GENERATED SIGNATURE
+                </p>
+
+                <code id="signature">
+                    ---
+                </code>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="panel history">
+
+        <div class="panel-title">
+
+            <div>
+                <p class="eyebrow">03 · DELIVERY HISTORY</p>
+                <h2>Webhook requests</h2>
+            </div>
+
+            <button
+                id="clearHistory"
+                class="secondary"
+            >
+                CLEAR HISTORY
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>EVENT ID</th>
+                        <th>EVENT</th>
+                        <th>STATUS</th>
+                        <th>LATENCY</th>
+                        <th>TIME</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="historyTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <section class="panel verification">
+
+        <div class="panel-title">
+
+            <div>
+                <p class="eyebrow">04 · SIGNATURE VERIFICATION</p>
+                <h2>HMAC verification</h2>
+            </div>
+
+        </div>
+
+
+        <div class="verification-grid">
+
+            <div>
+
+                <label>PAYLOAD</label>
+
+                <textarea
+                    id="verifyPayload"
+                    placeholder='{"hello":"world"}'
+                ></textarea>
+
+            </div>
+
+
+            <div>
+
+                <label>SECRET</label>
+
+                <input
+                    id="verifySecret"
+                    type="password"
+                    placeholder="secret"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>SIGNATURE</label>
+
+                <input
+                    id="verifySignature"
+                    placeholder="sha256=..."
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="verify-actions">
+
+            <button
+                id="verifyButton"
+                class="primary"
+            >
+                VERIFY SIGNATURE
+            </button>
+
+            <strong id="verificationResult">
+                WAITING
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+
+        <span>
+            WEBHOOK EVENT SIMULATOR
+        </span>
+
+        <span>
+            FULL-STACK · HMAC · REST API
+        </span>
+
+    </footer>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
